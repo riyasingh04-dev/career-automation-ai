@@ -1,0 +1,66 @@
+# ===== Python =====
+__pycache__/
+*.py[cod]
+*.egg-info/
+*.egg
+dist/
+build/
+
+.env*
+venv/
+.venv/
+env/
+
+*.sqlite3
+*.db
+*.sqlite
+
+.mypy_cache/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# ===== Vector DB =====
+vector_db/
+chroma/
+*.parquet
+*.bin
+
+# ===== Logs =====
+*.log
+*.pid
+
+# ===== Celery =====
+celerybeat-schedule
+celerybeat.pid
+
+# ===== Secrets =====
+config/secrets.toml
+secrets.toml
+credentials.json
+token.json
+client_secret.json
+
+# ===== OS =====
+.DS_Store
+Thumbs.db
+
+# ===== IDE =====
+.vscode/
+.idea/
+*.swp
+
+# ===== Node =====
+node_modules/
+npm-debug.log
+
+# ===== Backups =====
+*.bak
+*.old
+*.tmp
+*.dump
+*.sql
+
+# ===== Cache =====
+*.cache
+.cache/

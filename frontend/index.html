@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Hunter AI | Premium Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Outfit:wght@400;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg: #030712;
+            --card-bg: rgba(17, 24, 39, 0.7);
+            --accent: #38bdf8;
+            --accent-glow: rgba(56, 189, 248, 0.3);
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --border: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            background-image:
+                radial-gradient(circle at 20% 20%, rgba(56, 189, 248, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 80% 80%, rgba(56, 189, 248, 0.05) 0%, transparent 40%);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            width: 100%;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 2rem 0;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 3rem;
+        }
+
+        .logo {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(to right, #38bdf8, #818cf8);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.02em;
+        }
+
+        .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            background: rgba(34, 197, 94, 0.1);
+            color: #4ade80;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            border: 1px solid rgba(34, 197, 94, 0.2);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+            border-color: var(--border);
+        }
+
+        h2 {
+            font-family: 'Outfit', sans-serif;
+            margin-bottom: 1.5rem;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+        }
+
+        input[type="text"],
+        input[type="file"] {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            padding: 0.75rem 1rem;
+            color: white;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px var(--accent-glow);
+        }
+
+        .btn {
+            width: 100%;
+            background: var(--accent);
+            color: #030712;
+            border: none;
+            padding: 0.75rem 1rem;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .btn:hover {
+            background: #7dd3fc;
+            box-shadow: 0 0 15px var(--accent-glow);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .results {
+            grid-column: span 2;
+            margin-top: 2rem;
+            min-height: 200px;
+        }
+
+        .log-list {
+            list-style: none;
+            font-family: 'Monaco', 'Consolas', monospace;
+            font-size: 0.875rem;
+            color: #cbd5e1;
+        }
+
+        .log-item {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            gap: 1rem;
+        }
+
+        .log-timestamp {
+            color: var(--text-secondary);
+        }
+
+        .log-success {
+            color: #4ade80;
+        }
+
+        .log-error {
+            color: #f87171;
+        }
+
+        /* Results Display Styling */
+        .results-container {
+            grid-column: span 2;
+            margin-top: 1rem;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .score-card {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            background: rgba(56, 189, 248, 0.05);
+            padding: 1.5rem;
+            border-radius: 1rem;
+            border: 1px solid rgba(56, 189, 248, 0.2);
+        }
+
+        .score-circle {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 4px solid var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent);
+            box-shadow: 0 0 20px var(--accent-glow);
+        }
+
+        .resume-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .resume-box {
+            background: #0f172a;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            border: 1px solid var(--border);
+            font-family: 'Monaco', 'Consolas', monospace;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            color: #e2e8f0;
+            max-height: 600px;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .box-label {
+            display: block;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-secondary);
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+        }
+
+        .copy-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.25rem 0.75rem;
+            border-radius: 0.5rem;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: background 0.2s;
+            z-index: 10;
+        }
+
+        .copy-badge:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .download-actions {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-outline:hover {
+            background: var(--accent-glow);
+            box-shadow: 0 0 10px var(--accent-glow);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        #upload-status,
+        #analyze-status {
+            margin-top: 1rem;
+            font-size: 0.875rem;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">Job Hunter AI</div>
+            <div class="status-badge">
+                <span style="width: 8px; height: 8px; background: #4ade80; border-radius: 50%;"></span>
+                Production System Online
+            </div>
+        </header>
+
+        <div class="grid">
+            <div class="card">
+                <h2>1. Upload Content</h2>
+                <div class="input-group">
+                    <label for="auth-token">Access Token (Required)</label>
+                    <input type="text" id="auth-token" placeholder="Anything except 'invalid' works"
+                        value="job-hunter-access-2026">
+                </div>
+                <div class="input-group">
+                    <label for="resume-file">Resume (PDF)</label>
+                    <input type="file" id="resume-file" accept=".pdf">
+                </div>
+                <button class="btn" id="upload-btn">Process & Index Resume</button>
+                <div id="upload-status" class="hidden"></div>
+            </div>
+
+            <div class="card">
+                <h2>2. Smart Analysis</h2>
+                <div class="input-group">
+                    <label for="job-url">LinkedIn / Indeed Job URL</label>
+                    <input type="text" id="job-url" placeholder="https://linkedin.com/jobs/view/123...">
+                </div>
+                <div class="input-group">
+                    <label for="active-resume">Resume Filename</label>
+                    <input type="text" id="active-resume" placeholder="e.g. my_resume.pdf">
+                </div>
+                <button class="btn" id="analyze-btn">Analyze & Tailor</button>
+                <div id="analyze-status" class="hidden"></div>
+            </div>
+
+            <!-- Analysis Results Section -->
+            <div id="analysis-results" class="card results-container hidden">
+                <div class="results-header">
+                    <div style="display: flex; gap: 2rem; align-items: center;">
+                        <h2>Match Analysis</h2>
+                        <div class="download-actions">
+                            <button class="btn-outline" id="download-pdf">Download PDF</button>
+                            <button class="btn-outline" id="download-docx">Download DOCX</button>
+                        </div>
+                    </div>
+                    <div class="score-card">
+                        <div class="score-circle" id="ats-score">0%</div>
+                        <div>
+                            <div style="font-weight: 600;">ATS Compatibility</div>
+                            <div style="font-size: 0.8rem; color: var(--text-secondary);">Dynamic AI Match</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="resume-grid">
+                    <div class="resume-box">
+                        <span class="box-label">Original Content</span>
+                        <pre id="original-resume-view" style="white-space: pre-wrap;">Loading...</pre>
+                    </div>
+                    <div class="resume-box">
+                        <span class="box-label">AI Tailored Version</span>
+                        <span class="copy-badge" id="copy-resume">Copy</span>
+                        <pre id="tailored-resume-view" style="white-space: pre-wrap;">Generating...</pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card results">
+                <h2>System Logs & Results</h2>
+                <div id="logs" class="log-list">
+                    <div class="log-item">
+                        <span class="log-timestamp">00:00:00</span>
+                        <span>Waiting for user interaction...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = "http://localhost:8000";
+        let lastTailoredContent = "";
+        let lastJobTitle = "Tailored_Resume";
+
+        function addLog(message, type = "info") {
+            const logs = document.getElementById('logs');
+            const item = document.createElement('div');
+            item.className = 'log-item';
+            const time = new Date().toLocaleTimeString();
+            item.innerHTML = `
+                <span class="log-timestamp">${time}</span>
+                <span class="log-${type}">${message}</span>
+            `;
+            logs.prepend(item);
+        }
+
+        document.getElementById('upload-btn').addEventListener('click', async () => {
+            const file = document.getElementById('resume-file').files[0];
+            const token = document.getElementById('auth-token').value;
+
+            if (!file) return alert("Please select a file");
+
+            const btn = document.getElementById('upload-btn');
+            btn.disabled = true;
+            btn.innerText = "Indexing...";
+            addLog(`Starting upload for ${file.name}...`);
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                const response = await fetch(`${API_BASE}/resume/upload`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` },
+                    body: formData
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    addLog(`Successfully indexed: ${file.name}`, "success");
+                    document.getElementById('active-resume').value = file.name;
+                } else {
+                    addLog(`Error: ${data.detail}`, "error");
+                }
+            } catch (err) {
+                addLog(`Connection failed. Is the backend running?`, "error");
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "Process & Index Resume";
+            }
+        });
+
+        document.getElementById('analyze-btn').addEventListener('click', async () => {
+            const jobUrl = document.getElementById('job-url').value;
+            const resumeFile = document.getElementById('active-resume').value;
+            const token = document.getElementById('auth-token').value;
+
+            if (!jobUrl || !resumeFile) return alert("Please provide job URL and resume name");
+
+            const btn = document.getElementById('analyze-btn');
+            btn.disabled = true;
+            btn.innerText = "Analyzing...";
+            addLog(`Triggering AI analysis for job URL...`);
+
+            try {
+                const response = await fetch(`${API_BASE}/resume/analyze?resume_filename=${encodeURIComponent(resumeFile)}&job_url=${encodeURIComponent(jobUrl)}`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    addLog(`Analysis complete! Found match for: ${data.job_title}`, "success");
+                    addLog(`Dynamic ATS Score: ${data.ats_score}%`, "success");
+
+                    // Populate Results Section
+                    document.getElementById('analysis-results').classList.remove('hidden');
+                    document.getElementById('ats-score').innerText = `${data.ats_score}%`;
+                    document.getElementById('original-resume-view').innerText = data.original_resume;
+                    document.getElementById('tailored-resume-view').innerText = data.tailored_resume;
+
+                    lastTailoredContent = data.tailored_resume;
+                    lastJobTitle = data.job_title.replace(/\s+/g, '_');
+                } else {
+                    addLog(`Error: ${data.detail}`, "error");
+                }
+            } catch (err) {
+                addLog(`Analysis failed. Check your connection.`, "error");
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "Analyze & Tailor";
+            }
+        });
+
+        // Download functionality
+        async function downloadResume(format) {
+            if (!lastTailoredContent) return alert("Please tailor a resume first");
+
+            try {
+                const response = await fetch(`${API_BASE}/resume/download/${format}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${document.getElementById('auth-token').value}`
+                    },
+                    body: JSON.stringify({
+                        content: lastTailoredContent,
+                        filename: lastJobTitle
+                    })
+                });
+
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `${lastJobTitle}.${format}`;
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    addLog(`Downloaded tailored resume as ${format.toUpperCase()}`, "success");
+                } else {
+                    addLog(`Failed to download ${format.toUpperCase()}`, "error");
+                }
+            } catch (err) {
+                addLog(`Download error: ${err.message}`, "error");
+            }
+        }
+
+        document.getElementById('download-pdf').addEventListener('click', () => downloadResume('pdf'));
+        document.getElementById('download-docx').addEventListener('click', () => downloadResume('docx'));
+
+        // Copy functionality
+        document.getElementById('copy-resume').addEventListener('click', () => {
+            const content = document.getElementById('tailored-resume-view').innerText;
+            navigator.clipboard.writeText(content).then(() => {
+                const badge = document.getElementById('copy-resume');
+                badge.innerText = "✓ Copied!";
+                setTimeout(() => badge.innerText = "Copy", 2000);
+            });
+        });
+    </script>
+</body>
+
+</html>
+</body>
+
+</html>
