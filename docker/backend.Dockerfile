@@ -9,4 +9,4 @@ RUN playwright install-deps
 
 COPY . .
 
-CMD ["python", "backend/main.py"]
+CMD ["python", "-m", "backend.main"]

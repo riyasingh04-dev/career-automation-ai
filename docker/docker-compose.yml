@@ -6,19 +6,40 @@ services:
     env_file: ../.env
     ports:
       - "8000:8000"
+    volumes:
+      - ../data:/app/data
+      - ../backend:/app/backend
+      - ../mcp:/app/mcp
     depends_on:
       - db
       - redis
       - chroma
+    restart: always
+
+  worker:
+    build:
+      context: ..
+      dockerfile: docker/backend.Dockerfile
+    env_file: ../.env
+    volumes:
+      - ../data:/app/data
+      - ../backend:/app/backend
+      - ../mcp:/app/mcp
+    command: python -m celery -A backend.app.celery_worker worker --loglevel=info -P threads
+    depends_on:
+      - redis
+    restart: always
 
   db:
     image: postgres:15
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
+      POSTGRES_PASSWORD: Tom&jerry04
       POSTGRES_DB: jobhunter
     ports:
       - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
 
   redis:
     image: redis:7
@@ -29,3 +50,18 @@ services:
     image: chromadb/chroma
     ports:
       - "8001:8000"
+    volumes:
+      - chroma_data:/chroma/chroma
+
+  frontend:
+    image: python:3.11-slim
+    working_dir: /app
+    volumes:
+      - ../:/app
+    ports:
+      - "3000:3000"
+    command: python -m http.server 3000
+
+volumes:
+  postgres_data:
+  chroma_data:
