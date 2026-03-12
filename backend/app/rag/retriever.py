@@ -5,7 +5,14 @@ from typing import List, Dict
 
 class RAGRetriever:
     def __init__(self):
-        self.chroma_client = chromadb.PersistentClient(path=settings.CHROMA_PATH)
+        if settings.CHROMA_HOST:
+            self.chroma_client = chromadb.HttpClient(
+                host=settings.CHROMA_HOST, 
+                port=settings.CHROMA_PORT
+            )
+        else:
+            self.chroma_client = chromadb.PersistentClient(path=settings.CHROMA_PATH)
+            
         if settings.OPENAI_API_KEY:
             self.embedding_function = embedding_functions.OpenAIEmbeddingFunction(
                 api_key=settings.OPENAI_API_KEY,

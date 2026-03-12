@@ -18,6 +18,12 @@ class Settings(BaseSettings):
     # Workspace Paths
     WORKSPACE_ROOT: str = "d:/Job Hunter"
     CHROMA_PATH: str = "./rag/data/chroma"
+    CHROMA_HOST: Optional[str] = None
+    CHROMA_PORT: int = 8000
+    
+    # Celery Settings
+    CELERY_BROKER_URL: Optional[str] = None
+    CELERY_RESULT_BACKEND: Optional[str] = None
     
     class Config:
         env_file = ".env"

@@ -5,7 +5,7 @@ from mcp.tools.file_tool import FileTool
 from mcp.tools.llm_tool import LLMTool
 from mcp.tools.browser_tool import BrowserTool
 from backend.app.rag.retriever import rag_retriever
-from typing import Dict
+from typing import Dict, Optional
 import io
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
@@ -20,6 +20,11 @@ router = APIRouter(prefix="/resume", tags=["Resume"])
 file_tool = FileTool()
 llm_brain = LLMTool()
 browser_tool = BrowserTool()
+
+class AnalyzeRequest(BaseModel):
+    resume_filename: str
+    job_url: Optional[str] = None
+    job_description: Optional[str] = None
 
 class DownloadRequest(BaseModel):
     content: str
@@ -43,15 +48,26 @@ async def upload_resume(file: UploadFile = File(...)):
     return {"message": "Resume uploaded and indexed", "filename": file.filename}
 
 @router.post("/analyze")
-async def analyze_job(resume_filename: str, job_url: str):
-    # 1. Scrape job
-    job_data = await browser_tool.execute(job_url)
-    jd = job_data["content"]
+async def analyze_job(request: AnalyzeRequest):
+    # 1. Get JD (either from URL or direct text)
+    jd = ""
+    job_title = "Tailored Job"
+    
+    if request.job_url:
+        job_data = await browser_tool.execute(request.job_url)
+        jd = job_data["content"]
+        job_title = job_data["title"]
+    elif request.job_description:
+        jd = request.job_description
+        # Try to extract a title from the first line or first 50 chars
+        job_title = jd.split('\n')[0][:50] if jd else "Tailored Job"
+    else:
+        raise HTTPException(status_code=400, detail="Provide either job_url or job_description")
     
     # 2. Get resume content from RAG
-    resume_content = rag_retriever.get_resume(resume_filename)
+    resume_content = rag_retriever.get_resume(request.resume_filename)
     if not resume_content:
-        raise HTTPException(status_code=404, detail=f"Resume '{resume_filename}' not found in AI vector database")
+        raise HTTPException(status_code=404, detail=f"Resume '{request.resume_filename}' not found in AI vector database")
     
     # 3. Brain analysis
     brain_res = await llm_brain.execute("tailor_resume", {
@@ -60,7 +76,7 @@ async def analyze_job(resume_filename: str, job_url: str):
     })
     
     return {
-        "job_title": job_data["title"],
+        "job_title": job_title,
         "original_resume": resume_content,
         "tailored_resume": brain_res["tailored_resume"],
         "ats_score": brain_res["ats_score"]
